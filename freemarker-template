@@ -1,0 +1,89 @@
+Modify the project dependencies in your pom.xml file to include the following dependencies:
+////////////////////////////////////////////
+
+<dependency>
+    <groupId>com.liferay.portal</groupId>
+    <artifactId>com.liferay.portal.kernel</artifactId>
+    <version>${liferay.version}</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>com.liferay</groupId>
+    <artifactId>com.liferay.taglib.ui</artifactId>
+    <version>${liferay.version}</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>com.liferay</groupId>
+    <artifactId>com.liferay.portal.freemarker</artifactId>
+    <version>${liferay.version}</version>
+</dependency>
+
+///////////////////////////////////////////
+Make sure to replace ${liferay.version} with the version of Liferay CE that you are using.
+
+Replace the JSP files in your project with FreeMarker template files. You can create FreeMarker templates in the src/main/resources/templates directory.
+
+Modify your view.jsp file to include the following code:
+/////////////////////////////////////////
+
+<#assign liferay_ui = freeMarkerPortletPreferences.getData().get("liferay-ui") />
+
+<#if liferay_ui??>
+    <#include "${liferay_ui}" />
+</#if>
+
+/////////////////////////
+Modify your controller classes to extend the FreemarkerPortlet class instead of the MVCPortlet class.
+
+Modify your portlet.xml file to specify that your portlet uses FreeMarker templates:
+
+///////////////////////////////////////////
+
+<portlet>
+    <portlet-name>MyPortlet</portlet-name>
+    <display-name>My Portlet</display-name>
+    <portlet-class>com.liferay.portlet.FreemarkerPortlet</portlet-class>
+    <template-path>/templates/</template-path>
+    <portlet-info>
+        ...
+    </portlet-info>
+</portlet>
+Add the liferay-maven-plugin to your pom.xml file and configure it to build and deploy your portlet. Here's an example configuration:
+///////////////////////////////////////
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.liferay.maven.plugins</groupId>
+            <artifactId>liferay-maven-plugin</artifactId>
+            <version>${liferay.maven.plugin.version}</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>deploy</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <autoDeployDir>${liferay.auto.deploy.dir}</autoDeployDir>
+                <appServerDeployDir>${liferay.app.server.deploy.dir}</appServerDeployDir>
+                <pluginType>portlet</pluginType>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
+//////////////////////////////////////////
+
+Make sure to replace ${liferay.maven.plugin.version}, ${liferay.auto.deploy.dir}, and ${liferay.app.server.deploy.dir} with the appropriate values for your environment.
+
+Build and deploy your project using the liferay-maven-plugin:
+java
+Copy code
+mvn clean package liferay:deploy
+Note that these are general steps and the specific modifications needed may vary depending on your project structure and requirements.
+
+
+
